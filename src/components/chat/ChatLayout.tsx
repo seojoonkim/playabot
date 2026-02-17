@@ -11,14 +11,29 @@ interface Props {
   idol: IdolMeta;
 }
 
+// 시간대별 인사 prefix
+function getTimeGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return '좋은 아침입니다. ';
+  if (hour >= 12 && hour < 14) return '점심 시간이시군요. ';
+  if (hour >= 14 && hour < 18) return '안녕하세요. ';
+  if (hour >= 18 && hour < 22) return '편안한 저녁이시길 바랍니다. ';
+  return '늦은 시간에 문의 주셨군요. ';
+}
+
 // PLAYA 컨시어지 첫 인사
-function getFirstVisitGreeting(_idol: IdolMeta): string {
-  return '안녕하세요. 플라야 컨시어지입니다. 무엇을 도와드릴까요?';
+function getFirstVisitGreeting(idol: IdolMeta): string {
+  const timeGreeting = getTimeGreeting();
+  if (idol.firstVisitGreeting) {
+    return timeGreeting + idol.firstVisitGreeting;
+  }
+  return timeGreeting + '플라야 컨시어지입니다. 기존 회원이신가요, 아니면 처음으로 문의 주신 건가요?';
 }
 
 // 재방문 인사
 function getReturningGreeting(_language: string = 'ko'): string {
-  return '다시 찾아주셨군요. 추가로 궁금하신 점이 있으시면 편하게 말씀해 주세요.';
+  const timeGreeting = getTimeGreeting();
+  return timeGreeting + '다시 찾아주셨군요. 추가로 궁금하신 점이 있으시면 편하게 말씀해 주세요.';
 }
 
 export default function ChatLayout({ idol }: Props) {
