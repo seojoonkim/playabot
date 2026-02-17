@@ -40,38 +40,39 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    // 실제 PWA 설치 모드인 경우만 standalone
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
-      (window.navigator as any).standalone === true ||
-      !window.navigator.userAgent.includes('Safari') ||
-      window.navigator.userAgent.includes('CriOS') ||
-      window.navigator.userAgent.includes('FxiOS');
+      (window.navigator as any).standalone === true;
     setIsStandalone(standalone);
     setSpeechSupported(!!getSpeechRecognition());
   }, []);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (formRef.current && window.visualViewport) {
-        const bottomInset =
-          window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop;
-        formRef.current.style.paddingBottom = isStandalone
-          ? 'max(1rem, env(safe-area-inset-bottom))'
-          : `${Math.max(50, bottomInset)}px`;
+    const updatePosition = () => {
+      if (!formRef.current) return;
+      const vv = window.visualViewport;
+      if (vv) {
+        // Chrome 탭바, Safari 주소창, 키보드 등 모든 요소 고려
+        const bottomGap = window.innerHeight - vv.offsetTop - vv.height;
+        formRef.current.style.bottom = `${Math.max(0, bottomGap)}px`;
       }
     };
+
+    updatePosition();
     if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-      window.visualViewport.addEventListener('scroll', handleResize);
-      handleResize();
+      window.visualViewport.addEventListener('resize', updatePosition);
+      window.visualViewport.addEventListener('scroll', updatePosition);
     }
+    window.addEventListener('resize', updatePosition);
     return () => {
       if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', handleResize);
-        window.visualViewport.removeEventListener('scroll', handleResize);
+        window.visualViewport.removeEventListener('resize', updatePosition);
+        window.visualViewport.removeEventListener('scroll', updatePosition);
       }
+      window.removeEventListener('resize', updatePosition);
     };
-  }, [isStandalone]);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,7 +172,9 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           maxWidth: '600px',
           bottom: 0,
           backgroundColor: '#111111',
-          paddingBottom: isStandalone ? 'max(1rem, env(safe-area-inset-bottom))' : '50px',
+          paddingBottom: isStandalone
+            ? 'max(0.75rem, env(safe-area-inset-bottom))'
+            : '0.75rem',
         }}
       >
         {/* 이미지 미리보기 */}
