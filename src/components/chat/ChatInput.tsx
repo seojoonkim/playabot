@@ -25,6 +25,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isListening, setIsListening] = useState(false);
+  const [interimTranscript, setInterimTranscript] = useState('');
   const [speechSupported, setSpeechSupported] = useState(false);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -147,14 +148,26 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
     recognition.interimResults = true;
 
     recognition.onresult = (event: any) => {
-      let transcript = '';
+      let interim = '';
+      let finalText = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        transcript += event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalText += event.results[i][0].transcript;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
       }
-      setText((prev) => prev + transcript);
+      if (finalText) setText((prev) => prev + finalText);
+      setInterimTranscript(interim);
     };
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => {
+      setIsListening(false);
+      setInterimTranscript('');
+    };
+    recognition.onerror = () => {
+      setIsListening(false);
+      setInterimTranscript('');
+    };
 
     recognitionRef.current = recognition;
     recognition.start();
@@ -203,7 +216,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
       )}
 
       {/* 입력 행 */}
-      <div className="flex items-end gap-2">
+      <div className="flex items-center gap-2">
         {/* 이미지 첨부 버튼 */}
         <input
           ref={fileInputRef}
@@ -216,7 +229,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex items-center justify-center shrink-0 mb-0.5"
+          className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex items-center justify-center shrink-0"
           title="이미지 첨부"
         >
           {/* 이미지 아이콘 */}
@@ -238,7 +251,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
         <div className="relative flex-1">
           <textarea
             ref={inputRef}
-            value={text}
+            value={isListening && interimTranscript ? text + interimTranscript : text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={getPlaceholder(language)}
@@ -253,12 +266,12 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
             <button
               type="button"
               onClick={toggleListening}
-              className={`absolute right-2.5 bottom-2 w-6 h-6 flex items-center justify-center rounded-full transition-all ${
+              className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full transition-all ${
                 isListening ? 'text-red-500 animate-pulse' : 'text-gray-400 hover:text-gray-600'
               }`}
               title={isListening ? '음성 인식 중지' : '음성으로 입력'}
             >
-              <svg style={{ width: 16, height: 16 }} fill="currentColor" viewBox="0 0 24 24">
+              <svg style={{ width: 20, height: 20 }} fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zm-1 3a1 1 0 012 0v8a1 1 0 01-2 0V4zm-6 8a7 7 0 0014 0h-2a5 5 0 01-10 0H5zm7 7v3h-2v-3a9.02 9.02 0 01-6.93-5.5l1.87-.7A7.002 7.002 0 0012 21a7.002 7.002 0 007.06-5.2l1.87.7A9.02 9.02 0 0114 19v3h-2v-3z" />
               </svg>
             </button>
@@ -270,7 +283,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
           type="submit"
           disabled={!hasContent}
           className="w-10 h-10 rounded-full flex items-center justify-center text-white
-            disabled:opacity-30 transition-all duration-200 hover:shadow-lg active:scale-90 shrink-0 mb-0.5"
+            disabled:opacity-30 transition-all duration-200 hover:shadow-lg active:scale-90 shrink-0"
           style={{
             backgroundColor: hasContent ? themeColor : '#d1d5db',
             boxShadow: hasContent ? `0 4px 12px -2px ${themeColor}40` : 'none',
