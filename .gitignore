@@ -1,0 +1,13 @@
+node_modules
+dist
+.env
+.env.local
+server/node_modules
+.vercel
+
+.vercel
+.env*.local
+.env.prod
+.env.production
+.env.vercel-check
+.env.local.vercel
