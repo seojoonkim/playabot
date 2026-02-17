@@ -68,7 +68,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
       inputRef.current.style.height = 'auto';
       const sh = inputRef.current.scrollHeight;
       inputRef.current.style.height = `${Math.min(sh, 200)}px`;
-      setIsMultiLine(sh > 52);
+      setIsMultiLine(sh > 54);
     }
   }, [text]);
 
@@ -177,7 +177,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
+            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
             style={{ backgroundColor: '#2c2c2e' }}
             title="이미지 첨부"
           >
@@ -197,7 +197,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
               rows={1}
               className="w-full pl-4 py-2.5 rounded-2xl text-[15px] outline-none resize-none leading-relaxed scrollbar-hide"
               style={{
-                minHeight: '42px',
+                minHeight: '44px',
                 maxHeight: '200px',
                 paddingRight: text.length > 0 ? '2.5rem' : '3rem',
                 backgroundColor: '#1c1c1e',
@@ -248,7 +248,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           <button
             type="submit"
             disabled={!hasContent}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
+            className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
             style={{
               backgroundColor: hasContent ? '#ffffff' : '#2c2c2e',
               transition: 'background-color 0.2s',
