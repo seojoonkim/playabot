@@ -3,6 +3,7 @@ import { useChatStore } from '@/stores/chat-store';
 import { streamChat } from '@/lib/anthropic-client';
 import { getRelevantContext } from '@/lib/keyword-rag';
 import type { KnowledgeCategory } from '@/types/idol';
+import type { Attachment } from '@/components/chat/ChatInput';
 
 export function useChat(systemPrompt: string, knowledge?: Record<KnowledgeCategory, string> | null) {
   const messages = useChatStore((s) => s.messages);
@@ -50,8 +51,8 @@ export function useChat(systemPrompt: string, knowledge?: Record<KnowledgeCatego
   );
 
   const sendMessage = useCallback(
-    async (text: string, skipAI = false) => {
-      if (!text.trim()) return;
+    async (text: string, skipAI = false, attachments?: Attachment[]) => {
+      if (!text.trim() && (!attachments || attachments.length === 0)) return;
       
       // AI 응답 중이면 큐에 저장하고 리턴
       if (isStreaming) {
@@ -60,7 +61,15 @@ export function useChat(systemPrompt: string, knowledge?: Record<KnowledgeCatego
       }
 
       setError(null);
-      addMessage('user', text.trim());
+      // 화면 표시용 텍스트 (첨부 있으면 파일명 포함)
+      const displayText = [
+        text.trim(),
+        ...(attachments?.filter((a) => !a.isVideo).map(() => '📷 이미지') ?? []),
+        ...(attachments?.filter((a) => a.isVideo).map((a) => `🎥 ${a.name}`) ?? []),
+      ]
+        .filter(Boolean)
+        .join(' ');
+      addMessage('user', displayText || text.trim());
 
       // If skipAI, just add user message and return
       if (skipAI) {
@@ -79,12 +88,28 @@ export function useChat(systemPrompt: string, knowledge?: Record<KnowledgeCatego
       const readingDelay = 500 + Math.random() * 700;
       await new Promise(resolve => setTimeout(resolve, readingDelay));
 
+      // 이미지 첨부가 있으면 Vision 형식 content 배열로 구성
+      const userContent: any =
+        attachments && attachments.length > 0
+          ? [
+              ...(text.trim() ? [{ type: 'text', text: text.trim() }] : []),
+              ...attachments
+                .filter((a) => !a.isVideo) // 영상은 텍스트로 대체
+                .map((a) => ({
+                  type: 'image_url',
+                  image_url: { url: `data:${a.mimeType};base64,${a.base64}` },
+                })),
+              ...attachments
+                .filter((a) => a.isVideo)
+                .map((a) => ({ type: 'text', text: `[영상 첨부: ${a.name}]` })),
+            ]
+          : text.trim();
+
       const conversationMessages = [
-        // system 메시지는 AI 컨텍스트에서 제외 (레벨업 알림 등은 순수 UI용)
         ...messages
           .filter((m) => m.role !== 'system')
           .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-        { role: 'user' as const, content: text.trim() },
+        { role: 'user' as const, content: userContent },
       ];
 
       // 🔍 키워드 RAG: 사용자 메시지에서 키워드 감지하고 관련 정보 추가

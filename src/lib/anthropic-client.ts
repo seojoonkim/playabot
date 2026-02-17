@@ -1,6 +1,6 @@
 export interface StreamChatOptions {
   systemPrompt: string;
-  messages: { role: 'user' | 'assistant'; content: string }[];
+  messages: { role: 'user' | 'assistant'; content: string | any[] }[];
   idolId?: string; // RAG 검색용
   onChunk: (fullText: string) => void;
   onComplete: (fullText: string) => void;

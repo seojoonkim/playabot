@@ -5,7 +5,7 @@ import { useChat } from '@/hooks/use-chat';
 import { useChatStore } from '@/stores/chat-store';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
-import ChatInput from './ChatInput';
+import ChatInput, { type Attachment } from './ChatInput';
 
 interface Props {
   idol: IdolMeta;
@@ -78,13 +78,12 @@ export default function ChatLayout({ idol }: Props) {
   }, [historyLoaded, messages.length, idol.id, idol.language, addAssistantMessage]);
 
   // Handle message sending - queue if AI is responding
-  const handleSendMessage = useCallback((text: string) => {
+  const handleSendMessage = useCallback((text: string, attachments?: Attachment[]) => {
     if (isStreaming) {
-      // AI 응답 중이면 큐에 저장
       setPendingMessage(text);
       return;
     }
-    sendMessage(text);
+    sendMessage(text, false, attachments);
   }, [sendMessage, isStreaming]);
   
   // AI 응답 완료 후 대기 메시지 전송
