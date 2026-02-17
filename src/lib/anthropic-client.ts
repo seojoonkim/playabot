@@ -46,7 +46,7 @@ export async function streamChat({
         body: JSON.stringify({
           system: systemPrompt,
           messages,
-          model: 'moonshotai/kimi-k2.5', // 기존: 'claude-opus-4-6'
+          model: 'openai/gpt-4o-mini',
           max_tokens: 1024,
           idolId,
         }),
