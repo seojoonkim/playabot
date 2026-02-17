@@ -177,7 +177,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all mb-0.5"
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
             style={{ backgroundColor: '#2c2c2e' }}
             title="이미지 첨부"
           >
@@ -228,9 +228,9 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
               <button
                 type="button"
                 onClick={toggleListening}
-                className={`absolute right-2.5 bottom-2 w-7 h-7 flex items-center justify-center rounded-full transition-all ${
+                className={`absolute right-2.5 w-7 h-7 flex items-center justify-center rounded-full transition-all ${
                   isListening ? 'bg-red-500' : ''
-                }`}
+                } ${isMultiLine ? 'bottom-2' : 'top-1/2 -translate-y-1/2'}`}
                 title={isListening ? '음성 인식 중지' : '음성으로 입력'}
               >
                 {/* 마이크 아이콘 */}
@@ -248,7 +248,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           <button
             type="submit"
             disabled={!hasContent}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all mb-0.5"
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
             style={{
               backgroundColor: hasContent ? '#ffffff' : '#2c2c2e',
               transition: 'background-color 0.2s',
