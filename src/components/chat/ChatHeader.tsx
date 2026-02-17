@@ -145,7 +145,7 @@ export default function ChatHeader({ idol }: Props) {
   return (
     <>
       <div
-        className="sticky top-0 z-10 px-4 py-3 flex items-center gap-3 text-white shadow-md animate-header-in"
+        className="sticky top-0 z-10 px-4 py-3 flex items-center gap-3 text-white shadow-md"
         style={{
           paddingTop: 'max(12px, env(safe-area-inset-top))',
           background: `linear-gradient(135deg, ${idol.themeColor}, ${idol.themeColorSecondary})`,
