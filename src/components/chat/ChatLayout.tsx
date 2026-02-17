@@ -106,7 +106,7 @@ export default function ChatLayout({ idol }: Props) {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen shadow-xl overflow-hidden overflow-x-hidden" style={{ backgroundColor: '#111111' }}>
+    <div className="flex flex-col shadow-xl overflow-hidden overflow-x-hidden" style={{ backgroundColor: '#111111', height: '100dvh' }}>
       <ChatHeader idol={idol} />
 
       {!historyLoaded ? (
@@ -132,15 +132,12 @@ export default function ChatLayout({ idol }: Props) {
         </div>
       )}
 
-      {/* Desktop: input fixed to viewport bottom */}
-      <div className="animate-input-in mt-auto">
-        <ChatInput
-          onSend={handleSendMessage}
-          disabled={!historyLoaded}
-          themeColor={idol.themeColor}
-          language={idol.language}
-        />
-      </div>
+      <ChatInput
+        onSend={handleSendMessage}
+        disabled={!historyLoaded}
+        themeColor={idol.themeColor}
+        language={idol.language}
+      />
     </div>
   );
 }

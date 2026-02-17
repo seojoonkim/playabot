@@ -40,38 +40,11 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
-    // 실제 PWA 설치 모드인 경우만 standalone
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
     setIsStandalone(standalone);
     setSpeechSupported(!!getSpeechRecognition());
-  }, []);
-
-  useEffect(() => {
-    const updatePosition = () => {
-      if (!formRef.current) return;
-      const vv = window.visualViewport;
-      if (vv) {
-        // Chrome 탭바, Safari 주소창, 키보드 등 모든 요소 고려
-        const bottomGap = window.innerHeight - vv.offsetTop - vv.height;
-        formRef.current.style.bottom = `${Math.max(0, bottomGap)}px`;
-      }
-    };
-
-    updatePosition();
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updatePosition);
-      window.visualViewport.addEventListener('scroll', updatePosition);
-    }
-    window.addEventListener('resize', updatePosition);
-    return () => {
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener('resize', updatePosition);
-        window.visualViewport.removeEventListener('scroll', updatePosition);
-      }
-      window.removeEventListener('resize', updatePosition);
-    };
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -167,14 +140,12 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
       <form
         ref={formRef}
         onSubmit={handleSubmit}
-        className="fixed left-1/2 -translate-x-1/2 w-full px-3 pt-2 flex flex-col gap-2"
+        className="w-full px-3 pt-2 flex flex-col gap-2"
         style={{
-          maxWidth: '600px',
-          bottom: 0,
           backgroundColor: '#111111',
           paddingBottom: isStandalone
-            ? 'max(0.75rem, env(safe-area-inset-bottom))'
-            : '0.75rem',
+            ? 'max(1rem, env(safe-area-inset-bottom))'
+            : '1rem',
         }}
       >
         {/* 이미지 미리보기 */}
