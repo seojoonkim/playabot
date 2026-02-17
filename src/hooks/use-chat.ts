@@ -61,11 +61,11 @@ export function useChat(systemPrompt: string, knowledge?: Record<KnowledgeCatego
       }
 
       setError(null);
-      // 화면 표시용 텍스트 (첨부 있으면 파일명 포함)
+      // 화면 표시용 텍스트 (이미지 첨부 있으면 표시)
+      const imageCount = attachments?.length ?? 0;
       const displayText = [
         text.trim(),
-        ...(attachments?.filter((a) => !a.isVideo).map(() => '📷 이미지') ?? []),
-        ...(attachments?.filter((a) => a.isVideo).map((a) => `🎥 ${a.name}`) ?? []),
+        ...(imageCount > 0 ? [`📷 이미지 ${imageCount}장`] : []),
       ]
         .filter(Boolean)
         .join(' ');
@@ -88,20 +88,15 @@ export function useChat(systemPrompt: string, knowledge?: Record<KnowledgeCatego
       const readingDelay = 500 + Math.random() * 700;
       await new Promise(resolve => setTimeout(resolve, readingDelay));
 
-      // 이미지 첨부가 있으면 Vision 형식 content 배열로 구성
+      // 이미지 첨부가 있으면 GPT-4o Vision 형식 content 배열로 구성
       const userContent: any =
         attachments && attachments.length > 0
           ? [
               ...(text.trim() ? [{ type: 'text', text: text.trim() }] : []),
-              ...attachments
-                .filter((a) => !a.isVideo) // 영상은 텍스트로 대체
-                .map((a) => ({
-                  type: 'image_url',
-                  image_url: { url: `data:${a.mimeType};base64,${a.base64}` },
-                })),
-              ...attachments
-                .filter((a) => a.isVideo)
-                .map((a) => ({ type: 'text', text: `[영상 첨부: ${a.name}]` })),
+              ...attachments.map((a) => ({
+                type: 'image_url',
+                image_url: { url: `data:${a.mimeType};base64,${a.base64}` },
+              })),
             ]
           : text.trim();
 

@@ -4,7 +4,6 @@ export interface Attachment {
   base64: string;
   mimeType: string;
   name: string;
-  isVideo: boolean;
   previewUrl: string;
 }
 
@@ -19,7 +18,6 @@ function getPlaceholder(_language?: string): string {
   return '플라야에 대해 궁금한 점을 물어보세요...';
 }
 
-// Web Speech API 타입
 const getSpeechRecognition = () =>
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
@@ -75,7 +73,10 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
     if (!text.trim() && attachments.length === 0) return;
     onSend(text, attachments.length > 0 ? attachments : undefined);
     setText('');
-    setAttachments([]);
+    setAttachments((prev) => {
+      prev.forEach((a) => URL.revokeObjectURL(a.previewUrl));
+      return [];
+    });
     if (inputRef.current) inputRef.current.style.height = 'auto';
   };
 
@@ -97,30 +98,27 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
     if (!disabled && inputRef.current) inputRef.current.focus();
   }, [disabled]);
 
-  // 파일 첨부
+  // 이미지 첨부
   const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files || []).filter((f) => f.type.startsWith('image/'));
     if (!files.length) return;
 
     const newAttachments: Attachment[] = await Promise.all(
-      files.slice(0, 3).map(async (file) => {
-        const isVideo = file.type.startsWith('video/');
+      files.slice(0, 5).map(async (file) => {
         const previewUrl = URL.createObjectURL(file);
         const base64 = await new Promise<string>((resolve) => {
           const reader = new FileReader();
           reader.onload = () => {
             const result = reader.result as string;
-            // data:image/jpeg;base64,XXX → XXX 부분만
             resolve(result.split(',')[1] || '');
           };
           reader.readAsDataURL(file);
         });
-        return { base64, mimeType: file.type, name: file.name, isVideo, previewUrl };
+        return { base64, mimeType: file.type, name: file.name, previewUrl };
       }),
     );
 
-    setAttachments((prev) => [...prev, ...newAttachments].slice(0, 3));
-    // reset input value so same file can be re-selected
+    setAttachments((prev) => [...prev, ...newAttachments].slice(0, 5));
     e.target.value = '';
   }, []);
 
@@ -155,14 +153,8 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
       }
       setText((prev) => prev + transcript);
     };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognition.onerror = () => {
-      setIsListening(false);
-    };
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = () => setIsListening(false);
 
     recognitionRef.current = recognition;
     recognition.start();
@@ -182,32 +174,28 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
         paddingBottom: isStandalone ? 'max(1rem, env(safe-area-inset-bottom))' : '50px',
       }}
     >
-      {/* 첨부 파일 미리보기 */}
+      {/* 이미지 미리보기 — 메신저 스타일 */}
       {attachments.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 px-1 pb-1 overflow-x-auto scrollbar-hide">
           {attachments.map((att, idx) => (
-            <div key={idx} className="relative group">
-              {att.isVideo ? (
-                <div className="w-16 h-16 rounded-xl bg-gray-100 border border-gray-200 flex flex-col items-center justify-center text-center p-1">
-                  <svg className="w-6 h-6 text-gray-400 mb-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z" />
-                  </svg>
-                  <span className="text-[9px] text-gray-500 truncate w-full text-center">{att.name}</span>
-                </div>
-              ) : (
-                <img
-                  src={att.previewUrl}
-                  alt={att.name}
-                  className="w-16 h-16 rounded-xl object-cover border border-gray-200"
-                />
-              )}
+            <div
+              key={idx}
+              className="relative shrink-0 rounded-2xl overflow-hidden shadow-sm border border-gray-100"
+              style={{ width: 72, height: 72 }}
+            >
+              <img
+                src={att.previewUrl}
+                alt={att.name}
+                className="w-full h-full object-cover"
+              />
+              {/* X 삭제 버튼 */}
               <button
                 type="button"
                 onClick={() => removeAttachment(idx)}
-                className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-gray-700 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ width: 18, height: 18, fontSize: 10 }}
+                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80 transition-colors"
+                style={{ fontSize: 11, lineHeight: 1 }}
               >
-                ×
+                ✕
               </button>
             </div>
           ))}
@@ -216,11 +204,11 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
 
       {/* 입력 행 */}
       <div className="flex items-end gap-2">
-        {/* + 버튼 */}
+        {/* 이미지 첨부 버튼 */}
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*,video/*"
+          accept="image/*"
           multiple
           className="hidden"
           onChange={handleFileChange}
@@ -229,15 +217,24 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
           type="button"
           onClick={() => fileInputRef.current?.click()}
           className="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex items-center justify-center shrink-0 mb-0.5"
-          title="사진/영상 첨부"
+          title="이미지 첨부"
         >
-          <svg className="w-4.5 h-4.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.2}
-            style={{ width: 18, height: 18 }}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          {/* 이미지 아이콘 */}
+          <svg
+            className="text-gray-500"
+            style={{ width: 18, height: 18 }}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="3" ry="3" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
           </svg>
         </button>
 
-        {/* 텍스트 입력창 + 마이크 아이콘 */}
+        {/* 텍스트 입력창 + 마이크 */}
         <div className="relative flex-1">
           <textarea
             ref={inputRef}
@@ -252,7 +249,6 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
             style={{ minHeight: '42px', maxHeight: '120px' }}
             autoFocus
           />
-          {/* 마이크 버튼 (입력창 내부 오른쪽) */}
           {speechSupported && (
             <button
               type="button"
@@ -262,7 +258,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
               }`}
               title={isListening ? '음성 인식 중지' : '음성으로 입력'}
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <svg style={{ width: 16, height: 16 }} fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3zm-1 3a1 1 0 012 0v8a1 1 0 01-2 0V4zm-6 8a7 7 0 0014 0h-2a5 5 0 01-10 0H5zm7 7v3h-2v-3a9.02 9.02 0 01-6.93-5.5l1.87-.7A7.002 7.002 0 0012 21a7.002 7.002 0 007.06-5.2l1.87.7A9.02 9.02 0 0114 19v3h-2v-3z" />
               </svg>
             </button>
@@ -278,7 +274,6 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
           style={{
             backgroundColor: hasContent ? themeColor : '#d1d5db',
             boxShadow: hasContent ? `0 4px 12px -2px ${themeColor}40` : 'none',
-            transform: hasContent ? 'scale(1)' : 'scale(0.95)',
           }}
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
