@@ -64,10 +64,7 @@ export default function LandingPage() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
           </svg>
         </button>
-        <div style={{ marginTop: '72px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', opacity: 0.3 }}>
-          <span style={{ fontSize: '9px', letterSpacing: '0.25em', fontFamily: 'system-ui, sans-serif' }}>SCROLL</span>
-          <div style={{ width: '1px', height: '36px', background: dark }} />
-        </div>
+        <div style={{ marginTop: '40px' }} />
       </section>
 
       {/* ── 3가지 가치 ── */}
