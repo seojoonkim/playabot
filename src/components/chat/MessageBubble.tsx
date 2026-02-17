@@ -197,41 +197,13 @@ export default function MessageBubble({ message, idol, isNew = false, onBubbleRe
     return (
       <div className="flex justify-end mb-3 animate-bubble-in-user">
         <div className="flex flex-col items-end gap-0.5">
-          <div className="relative">
-            <div
-              className="max-w-[78%] px-4 py-2.5 rounded-2xl rounded-br-sm text-white text-[15px] leading-relaxed shadow-sm"
-              style={{
-                background: `linear-gradient(135deg, ${idol.themeColor}, ${idol.themeColorSecondary})`,
-              }}
-            >
-              {message.content}
-            </div>
-            {/* 리액션 표시 - 말풍선 아래에 겹치지 않게 */}
-            {message.reaction && (
-              <div 
-                className="absolute -bottom-5 left-0 flex items-center gap-1 animate-bounce-in bg-white/90 px-1.5 py-0.5 rounded-full shadow-sm"
-                style={{ animationDuration: '0.3s' }}
-              >
-                <span className="text-sm">{message.reaction}</span>
-                <span className="text-[10px] text-pink-500 font-medium">+1 MIM</span>
-              </div>
-            )}
-          </div>
-          {/* 읽음 표시 + MIM */}
-          <div className="flex items-center gap-1.5 mr-1">
-            {message.isRead && (
-              <span className="text-[10px] text-gray-400">
-                {idol.language === 'ja' ? '既読' : '읽음'}
-              </span>
-            )}
-            {message.expGained && message.expGained > 0 && (
-              <span 
-                className="text-[10px] font-bold animate-mim-glow"
-                style={{ color: idol.themeColor }}
-              >
-                ✨ +{message.expGained} MIM
-              </span>
-            )}
+          <div
+            className="max-w-[78%] px-4 py-2.5 rounded-2xl rounded-br-sm text-white text-[15px] leading-relaxed shadow-sm"
+            style={{
+              background: `linear-gradient(135deg, ${idol.themeColor}, ${idol.themeColorSecondary})`,
+            }}
+          >
+            {message.content}
           </div>
         </div>
       </div>
@@ -277,15 +249,6 @@ export default function MessageBubble({ message, idol, isNew = false, onBubbleRe
                 {parseInstagramHandles(part)}
               </div>
             ))}
-            {/* MIM 획득 표시 */}
-            {message.expGained && message.expGained > 0 && (
-              <span 
-                className="text-[10px] font-bold ml-1 animate-mim-glow"
-                style={{ color: idol.themeColor }}
-              >
-                ✨ +{message.expGained} MIM
-              </span>
-            )}
           </div>
         </div>
       </div>

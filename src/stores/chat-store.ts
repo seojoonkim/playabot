@@ -8,7 +8,6 @@ interface ChatStore {
   isStreaming: boolean;
   error: string | null;
   historyLoaded: boolean;
-  lastMessageTime: number | null; // 마지막 메시지 시간
 
   setCurrentIdol: (idolId: string | null) => void;
   loadHistory: (idolId: string) => Promise<void>;
@@ -18,8 +17,6 @@ interface ChatStore {
   setError: (error: string | null) => void;
   clearMessages: () => void;
   persistMessages: () => void;
-  markUserMessagesAsRead: () => void; // 읽음 처리
-  addReactionToLastUserMessage: (reaction: string) => void; // 리액션 추가
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
@@ -28,7 +25,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   isStreaming: false,
   error: null,
   historyLoaded: false,
-  lastMessageTime: null,
 
   setCurrentIdol: (idolId) => {
     // Save current conversation before switching
@@ -41,8 +37,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       messages: [],
       error: null,
       historyLoaded: false,
-      isStreaming: false, // 새 채팅 시작 시 로딩 상태 초기화
-      lastMessageTime: null,
+      isStreaming: false,
     });
     // Load history for the new idol
     if (idolId) {
@@ -55,11 +50,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       const messages = await getChatHistory(idolId);
       // Only set if we're still on the same idol
       if (get().currentIdolId === idolId) {
-        // 마지막 메시지 시간 계산
-        const lastTime = messages.length > 0 
-          ? Math.max(...messages.map(m => m.timestamp))
-          : null;
-        set({ messages, historyLoaded: true, lastMessageTime: lastTime });
+        set({ messages, historyLoaded: true });
       }
     } catch {
       set({ historyLoaded: true });
@@ -68,17 +59,16 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   addMessage: (role, content) =>
     set((state) => {
-      const now = Date.now();
       const newMessages = [
         ...state.messages,
         {
           id: crypto.randomUUID(),
           role,
           content,
-          timestamp: now,
+          timestamp: Date.now(),
         },
       ];
-      return { messages: newMessages, lastMessageTime: now };
+      return { messages: newMessages };
     }),
 
   updateLastAssistantMessage: (content) =>
@@ -110,26 +100,4 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       saveChatHistory(currentIdolId, messages).catch(() => {});
     }
   },
-
-  // 모든 user 메시지를 읽음 처리
-  markUserMessagesAsRead: () =>
-    set((state) => ({
-      messages: state.messages.map((msg) =>
-        msg.role === 'user' ? { ...msg, isRead: true } : msg
-      ),
-    })),
-
-  // 마지막 user 메시지에 리액션 추가 (20% 확률로 호출됨)
-  addReactionToLastUserMessage: (reaction: string) =>
-    set((state) => {
-      const msgs = [...state.messages];
-      // 마지막 user 메시지 찾기
-      for (let i = msgs.length - 1; i >= 0; i--) {
-        if (msgs[i]!.role === 'user' && !msgs[i]!.reaction) {
-          msgs[i] = { ...msgs[i]!, reaction };
-          break;
-        }
-      }
-      return { messages: msgs };
-    }),
 }));

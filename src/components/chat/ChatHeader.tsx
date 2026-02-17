@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { IdolMeta } from '@/types/idol';
 import { useChatStore } from '@/stores/chat-store';
-import { useIntimacyStore } from '@/stores/intimacy-store';
 
 interface Props {
   idol: IdolMeta;
@@ -137,9 +136,6 @@ export default function ChatHeader({ idol }: Props) {
 
   const clearMessages = useChatStore((s) => s.clearMessages);
   const isStreaming = useChatStore((s) => s.isStreaming);
-
-  // 친밀도 (내부 상태용, UI에서 숨김)
-  useIntimacyStore((s) => s.getOrCreateIntimacy(idol.id));
 
   const handleReset = () => {
     clearMessages();

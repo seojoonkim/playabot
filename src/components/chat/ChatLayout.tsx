@@ -3,7 +3,6 @@ import type { IdolMeta } from '@/types/idol';
 import { useSystemPrompt } from '@/hooks/use-system-prompt';
 import { useChat } from '@/hooks/use-chat';
 import { useChatStore } from '@/stores/chat-store';
-import { useIntimacyStore } from '@/stores/intimacy-store';
 import ChatHeader from './ChatHeader';
 import MessageList from './MessageList';
 import ChatInput from './ChatInput';
@@ -26,43 +25,11 @@ export default function ChatLayout({ idol }: Props) {
   const { systemPrompt, knowledge } = useSystemPrompt(idol);
   const { messages, isStreaming, error, sendMessage, addAssistantMessage, historyLoaded } =
     useChat(systemPrompt, knowledge);
-  
-  // 친밀도 관련
-  const levelChangeEvent = useIntimacyStore((s) => s.levelChangeEvent);
-  const clearLevelChangeEvent = useIntimacyStore((s) => s.clearLevelChangeEvent);
-  const checkInactivityPenalty = useIntimacyStore((s) => s.checkInactivityPenalty);
 
   const initialMessageSent = useRef(false);
-  const inactivityChecked = useRef(false);
   
   // 메시지 큐잉: AI 응답 중에 입력하면 대기
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
-  
-  // 비활성 페널티 체크 (채팅 입장 시)
-  useEffect(() => {
-    if (historyLoaded && !inactivityChecked.current) {
-      inactivityChecked.current = true;
-      checkInactivityPenalty(idol.id);
-    }
-  }, [historyLoaded, idol.id, checkInactivityPenalty]);
-  
-  // 레벨업/다운 시스템 메시지
-  useEffect(() => {
-    if (levelChangeEvent && levelChangeEvent.idolId === idol.id) {
-      const { oldLevel, newLevel, title } = levelChangeEvent;
-      const isLevelUp = newLevel > oldLevel;
-      const emoji = isLevelUp ? '🎉' : '💔';
-      const action = isLevelUp ? '레벨업' : '레벨다운';
-      
-      const systemMessage = `[시스템] ${emoji} ${action}! Lv.${oldLevel} → Lv.${newLevel} (${title})`;
-      
-      // 약간의 딜레이 후 시스템 메시지 추가
-      setTimeout(() => {
-        addAssistantMessage(systemMessage);
-        clearLevelChangeEvent();
-      }, 500);
-    }
-  }, [levelChangeEvent, idol.id, addAssistantMessage, clearLevelChangeEvent]);
 
   // 아이돌이 먼저 인사하기 (첫 방문 vs 재방문 구분)
   useEffect(() => {
