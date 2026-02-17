@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 
 export interface Attachment {
   base64: string;
@@ -194,8 +195,8 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           </div>
         )}
 
-        {/* 입력 행 */}
-        <div className="flex items-end gap-2">
+        {/* 입력 행 — 한 줄이면 중앙, 멀티라인이면 하단 정렬 */}
+        <div className={`flex gap-2 ${isMultiLine ? 'items-end' : 'items-center'}`}>
 
           {/* + 버튼 */}
           <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
@@ -224,7 +225,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
               style={{
                 minHeight: '42px',
                 maxHeight: '200px',
-                paddingRight: '2.75rem',
+                paddingRight: text.length > 0 ? '2.5rem' : '3rem',
                 backgroundColor: '#1c1c1e',
                 color: '#ffffff',
                 caretColor: '#ffffff',
@@ -248,8 +249,8 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
               </button>
             )}
 
-            {/* 마이크 버튼 — 우하단 */}
-            {speechSupported && (
+            {/* 마이크 버튼 — 텍스트 없을 때만 표시 */}
+            {speechSupported && text.length === 0 && (
               <button
                 type="button"
                 onClick={toggleListening}
@@ -286,9 +287,9 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
         </div>
       </form>
 
-      {/* 전체화면 확대 입력 모달 — 다크 */}
-      {isExpanded && (
-        <div className="fixed inset-0 z-50 flex flex-col" style={{ backgroundColor: '#111111' }}>
+      {/* 전체화면 확대 입력 모달 — Portal로 body에 직접 렌더링 */}
+      {isExpanded && createPortal(
+        <div className="fixed inset-0 z-[9999] flex flex-col" style={{ backgroundColor: '#111111' }}>
           {/* 상단 바 */}
           <div className="flex items-center justify-end px-4 py-3">
             <button
@@ -333,7 +334,8 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
               </svg>
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
