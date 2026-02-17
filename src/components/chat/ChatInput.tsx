@@ -195,14 +195,14 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
         )}
 
         {/* 입력 행 */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-end gap-2">
 
           {/* + 버튼 */}
           <input ref={fileInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handleFileChange} />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all mb-0.5"
             style={{ backgroundColor: '#2c2c2e' }}
             title="이미지 첨부"
           >
@@ -259,7 +259,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
                 title={isListening ? '음성 인식 중지' : '음성으로 입력'}
               >
                 {/* 마이크 아이콘 */}
-                <svg style={{ width: 18, height: 18 }} fill="none" stroke={isListening ? 'white' : '#636366'} strokeWidth={1.8} viewBox="0 0 24 24">
+                <svg style={{ width: 24, height: 24 }} fill="none" stroke={isListening ? 'white' : '#8e8e93'} strokeWidth={1.6} viewBox="0 0 24 24">
                   <rect x="9" y="2" width="6" height="12" rx="3" />
                   <path strokeLinecap="round" d="M5 10a7 7 0 0014 0" />
                   <line x1="12" y1="19" x2="12" y2="22" strokeLinecap="round" />
@@ -273,7 +273,7 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
           <button
             type="submit"
             disabled={!hasContent}
-            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all"
+            className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-all mb-0.5"
             style={{
               backgroundColor: hasContent ? '#ffffff' : '#2c2c2e',
               transition: 'background-color 0.2s',
