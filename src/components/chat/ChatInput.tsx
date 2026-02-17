@@ -27,6 +27,9 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
   const [isListening, setIsListening] = useState(false);
   const [interimTranscript, setInterimTranscript] = useState('');
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [isMultiLine, setIsMultiLine] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const expandedRef = useRef<HTMLTextAreaElement>(null);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -91,7 +94,9 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.style.height = 'auto';
-      inputRef.current.style.height = `${Math.min(inputRef.current.scrollHeight, 120)}px`;
+      const sh = inputRef.current.scrollHeight;
+      inputRef.current.style.height = `${Math.min(sh, 200)}px`;
+      setIsMultiLine(sh > 52);
     }
   }, [text]);
 
@@ -177,6 +182,7 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
   const hasContent = text.trim().length > 0 || attachments.length > 0;
 
   return (
+    <>
     <form
       ref={formRef}
       onSubmit={handleSubmit}
@@ -256,17 +262,37 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
             onKeyDown={handleKeyDown}
             placeholder={getPlaceholder(language)}
             rows={1}
-            className="w-full pl-4 pr-10 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 text-[15px] outline-none
+            className="w-full pl-4 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 text-[15px] outline-none
               focus:border-purple-300 focus:ring-2 focus:ring-purple-50 transition-all duration-200
               resize-none leading-relaxed scrollbar-hide"
-            style={{ minHeight: '42px', maxHeight: '120px' }}
+            style={{
+              minHeight: '42px',
+              maxHeight: '200px',
+              paddingRight: isMultiLine ? '2.5rem' : '2.75rem',
+            }}
             autoFocus
           />
+
+          {/* 확대 버튼 — 멀티라인일 때 우상단 */}
+          {isMultiLine && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded(true)}
+              className="absolute top-2 right-2.5 w-6 h-6 flex items-center justify-center rounded-md bg-gray-200/80 hover:bg-gray-300 transition-colors"
+              title="입력창 확대"
+            >
+              <svg style={{ width: 13, height: 13 }} fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+              </svg>
+            </button>
+          )}
+
+          {/* 마이크 버튼 — 우하단 (항상) */}
           {speechSupported && (
             <button
               type="button"
               onClick={toggleListening}
-              className={`absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full transition-all ${
+              className={`absolute right-2.5 bottom-2 w-7 h-7 flex items-center justify-center rounded-full transition-all ${
                 isListening ? 'text-red-500 animate-pulse' : 'text-gray-400 hover:text-gray-600'
               }`}
               title={isListening ? '음성 인식 중지' : '음성으로 입력'}
@@ -295,5 +321,55 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
         </button>
       </div>
     </form>
+
+    {/* 전체화면 확대 입력 모달 */}
+    {isExpanded && (
+      <div className="fixed inset-0 z-50 flex flex-col bg-white">
+        {/* 상단 바 */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+          <span className="text-sm font-medium text-gray-500">메시지 작성</span>
+          <button
+            type="button"
+            onClick={() => setIsExpanded(false)}
+            className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            title="축소"
+          >
+            <svg style={{ width: 14, height: 14 }} fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9L4 4m0 0v4m0-4h4m6 0h4m0 0v4m0-4l-5 5M9 15l-5 5m0 0h4m-4 0v-4m16 4l-5-5m5 5v-4m0 4h-4" />
+            </svg>
+          </button>
+        </div>
+
+        {/* 확대 textarea */}
+        <textarea
+          ref={expandedRef}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={getPlaceholder(language)}
+          className="flex-1 px-5 py-4 text-[16px] leading-relaxed outline-none resize-none text-gray-800"
+          autoFocus
+        />
+
+        {/* 하단 전송 버튼 */}
+        <div
+          className="flex items-center justify-end px-4 py-3 border-t border-gray-100"
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+        >
+          <button
+            type="button"
+            disabled={!hasContent}
+            onClick={(e) => { setIsExpanded(false); handleSubmit(e as any); }}
+            className="w-11 h-11 rounded-full flex items-center justify-center text-white
+              disabled:opacity-30 transition-all duration-200 active:scale-90"
+            style={{ backgroundColor: hasContent ? themeColor : '#d1d5db' }}
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
