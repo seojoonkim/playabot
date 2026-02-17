@@ -190,12 +190,13 @@ export default function ChatHeader({ idol }: Props) {
         {/* 초기화 버튼 */}
         <button
           onClick={() => setShowResetModal(true)}
-          className="p-1.5 rounded-full hover:bg-white/20 active:bg-red-500/50 active:scale-90 transition-all duration-200"
+          className="flex items-center gap-1 px-2 py-1.5 rounded-full hover:bg-white/20 active:bg-red-500/50 active:scale-90 transition-all duration-200 text-xs font-medium"
           title="대화 초기화"
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
+          초기화
         </button>
       </div>
 
