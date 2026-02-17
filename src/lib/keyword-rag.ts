@@ -1,5 +1,5 @@
 /**
- * 키워드 기반 RAG - 사용자 메시지에서 키워드 감지하고 관련 정보 반환
+ * 키워드 기반 RAG - PLAYA 멤버십 클럽 전용
  */
 
 export interface KeywordMatch {
@@ -8,41 +8,48 @@ export interface KeywordMatch {
   content: string;
 }
 
-// 키워드 → 관련 정보 매핑
-// 각 아이돌별로 다르게 설정 가능하지만, 일단 공통 키워드로 시작
+// PLAYA 키워드 → 관련 섹션 매핑
 const KEYWORD_MAP: Record<string, { section: string; keywords: string[] }[]> = {
-  // 회사/투자 관련
-  hashed: [
-    { section: '해시드 연관성', keywords: ['해시드', 'hashed', '해쉬드'] },
+  pricing: [
+    { section: '가격', keywords: ['가격', '비용', '얼마', '가입비', '연회비', '보증금', '결제', '카드', '이체', '환불', '양도'] },
   ],
-  modhaus: [
-    { section: '소속사', keywords: ['모드하우스', 'modhaus', '소속사'] },
+  membership: [
+    { section: '멤버십', keywords: ['멤버십', '회원', '가입', '입회', '추천', '초대', '법인', '개인', '평생', '만기'] },
   ],
-  unopnd: [
-    { section: '언오픈드', keywords: ['언오픈드', 'unopnd', '벤처빌더'] },
+  tennis: [
+    { section: '테니스', keywords: ['테니스', '레슨', '코트', '슬롯', '코치', '배드민턴'] },
   ],
-  // 인물 관련
-  ceo: [
-    { section: '대표', keywords: ['김서준', '서준', '이찬기', '정병기', '백광현', '대표'] },
+  fitness: [
+    { section: '피트니스', keywords: ['피트니스', '헬스', '운동', 'pt', '트레이닝', '24시간', '새벽'] },
   ],
-  // 그룹 관련
-  triples: [
-    { section: '그룹', keywords: ['트리플에스', 'triples', '트리플s'] },
+  restaurant: [
+    { section: '본연', keywords: ['본연', '레스토랑', '식사', '예약', '와인', '콜키지', '룸'] },
   ],
-  cosmo: [
-    { section: 'Web3', keywords: ['코스모', 'cosmo', 'objekt', '오브젝트', 'nft', 'web3'] },
+  lounge: [
+    { section: '라운지', keywords: ['라운지', '카페', '미팅룸', '대관', '도산대로'] },
   ],
-  // 경력 관련
-  career: [
-    { section: '경력', keywords: ['보니하니', '버스터즈', '아역', '데뷔'] },
+  facility: [
+    { section: '시설', keywords: ['시설', '주차', '사물함', '락커', '샤워', '수건', '운동복', 'wifi', '와이파이'] },
   ],
-  kbw: [
-    { section: 'KBW', keywords: ['kbw', '코리아블록체인위크', '패널'] },
+  guest: [
+    { section: '게스트', keywords: ['게스트', '초대', '프렌즈', '패스', '지인', '동반'] },
+  ],
+  family: [
+    { section: '가족', keywords: ['가족', '배우자', '자녀', '패밀리', '아이', '아들', '딸'] },
+  ],
+  location: [
+    { section: '위치', keywords: ['위치', '주소', '어디', '논현', '파티오나인', '도산대로', '강남'] },
+  ],
+  hours: [
+    { section: '운영시간', keywords: ['운영시간', '오픈', '몇시', '시간', '휴무', '영업'] },
+  ],
+  concierge: [
+    { section: '컨시어지', keywords: ['컨시어지', '와인 구매', '부동산', '추천'] },
   ],
 };
 
 /**
- * 텍스트에서 매칭되는 키워드 찾기
+ * 텍스트에서 매칭되는 키워드 카테고리 찾기
  */
 export function findKeywords(text: string): string[] {
   const lowerText = text.toLowerCase();
@@ -75,17 +82,13 @@ export function extractSection(mdContent: string, sectionKeywords: string[]): st
   let capturing = false;
   
   for (const line of lines) {
-    // 새 섹션 시작 (## 또는 ###)
     if (line.startsWith('## ') || line.startsWith('### ')) {
-      // 이전 섹션 저장
       if (capturing && currentContent.length > 0) {
         sections.push(currentContent.join('\n'));
       }
       
       currentSection = line.toLowerCase();
       currentContent = [line];
-      
-      // 키워드와 매칭되는지 확인
       capturing = sectionKeywords.some(kw => 
         currentSection.includes(kw.toLowerCase())
       );
@@ -94,7 +97,6 @@ export function extractSection(mdContent: string, sectionKeywords: string[]): st
     }
   }
   
-  // 마지막 섹션
   if (capturing && currentContent.length > 0) {
     sections.push(currentContent.join('\n'));
   }
@@ -136,7 +138,6 @@ export function getRelevantContext(
   const sectionKeywords = getSectionKeywords(matchedCategories);
   const relevantSections: string[] = [];
   
-  // 모든 knowledge 파일에서 관련 섹션 추출
   for (const [filename, content] of Object.entries(knowledgeFiles)) {
     const extracted = extractSection(content, sectionKeywords);
     if (extracted.trim()) {
@@ -148,5 +149,5 @@ export function getRelevantContext(
     return '';
   }
   
-  return `\n\n---\n## 🔍 이 대화와 관련된 추가 정보 (반드시 참고해서 답변하세요!)\n\n${relevantSections.join('\n\n')}`;
+  return `\n\n---\n## 🔍 이 대화와 관련된 추가 정보 (참고해서 자연스럽게 답변하세요)\n\n${relevantSections.join('\n\n')}`;
 }

@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'OpenAI API key not configured' });
   }
 
-  const { query, idolId, category, topK = 5, threshold = 0.7 } = req.body;
+  const { query, category, topK = 5, threshold = 0.7 } = req.body;
 
   if (!query) {
     return res.status(400).json({ error: 'query is required' });
@@ -49,14 +49,13 @@ export default async function handler(req, res) {
     const embeddingData = await embeddingResponse.json();
     const queryEmbedding = embeddingData.data[0].embedding;
 
-    // 2. Supabase에서 similarity search
+    // 2. Supabase에서 PLAYA knowledge similarity search
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data, error } = await supabase.rpc('match_idol_knowledge', {
+    const { data, error } = await supabase.rpc('match_playa_knowledge', {
       query_embedding: queryEmbedding,
       match_threshold: threshold,
       match_count: topK,
-      filter_idol_id: idolId || null,
       filter_category: category || null,
     });
 
