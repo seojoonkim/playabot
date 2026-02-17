@@ -38,7 +38,7 @@ export async function loadIdolMeta(idolId: string): Promise<IdolMeta | null> {
 export async function loadIdolKnowledge(
   idolId: string,
   agencyId?: string,
-  groupName?: string,
+  _groupName?: string,
 ): Promise<Record<KnowledgeCategory, string>> {
   const result = {} as Record<KnowledgeCategory, string>;
   const dbFiles = await db.getAllKnowledgeForIdol(idolId);
@@ -49,17 +49,6 @@ export async function loadIdolKnowledge(
     if (category === 'agency-info') {
       if (agencyId) {
         result[category] = await loadAgencyInfo(agencyId);
-      } else {
-        result[category] = '';
-      }
-      continue;
-    }
-
-    // Special handling for group-info
-    if (category === 'group-info') {
-      if (groupName) {
-        const groupSlug = getGroupSlug(groupName);
-        result[category] = await loadGroupInfoMd(groupSlug);
       } else {
         result[category] = '';
       }
@@ -79,17 +68,6 @@ export async function loadIdolKnowledge(
   }
 
   return result;
-}
-
-// Load single group info.md file
-async function loadGroupInfoMd(groupSlug: string): Promise<string> {
-  try {
-    const res = await fetch(`/groups/${groupSlug}/info.md`);
-    if (!res.ok) return '';
-    return await res.text();
-  } catch {
-    return '';
-  }
 }
 
 // --- Group info loading ---

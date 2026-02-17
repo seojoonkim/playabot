@@ -24,7 +24,6 @@ export const KNOWLEDGE_CATEGORIES = [
   'topics',
   'boundaries',
   'relationships',
-  'group-info',
   'agency-info',
 ] as const;
 
@@ -37,8 +36,7 @@ export const KNOWLEDGE_LABELS: Record<KnowledgeCategory, string> = {
   topics: '관심사/취미',
   boundaries: '대화 경계',
   relationships: '관계/호칭',
-  'group-info': '그룹 정보',
-  'agency-info': '소속사 정보',
+  'agency-info': '회사 정보',
 };
 
 export interface IdolKnowledgeFile {
