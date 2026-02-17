@@ -1,6 +1,6 @@
 {
   "id": "playa",
-  "nameKo": "플레야",
+  "nameKo": "Playa 상담사",
   "nameEn": "Playa",
   "group": "Solo",
   "agencyId": "playabot",
@@ -8,8 +8,8 @@
   "themeColor": "#6C63FF",
   "themeColorSecondary": "#D4D0FF",
   "tagline": "당신의 AI 상담사, Playa예요 ✨",
-  "greeting": "안녕! Playa야 😊",
-  "firstVisitGreeting": "안녕하세요! 저는 Playa예요 ✨ 무엇이든 편하게 얘기해요. 당신의 이야기를 들을 준비가 됐어요 😊",
+  "greeting": "안녕! Playa 상담사야 😊",
+  "firstVisitGreeting": "안녕하세요! 저는 Playa 상담사예요 ✨ 무엇이든 편하게 얘기해요. 당신의 이야기를 들을 준비가 됐어요 😊",
   "isBuiltIn": true,
   "createdAt": 0,
   "updatedAt": 0

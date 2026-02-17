@@ -30,11 +30,11 @@ export default function IdolSelector({ idols }: Props) {
           <div className="flex items-center justify-center gap-2 mb-3 animate-fade-in">
             <img 
               src="/logo.svg" 
-              alt="Playabot" 
+              alt="Playa 상담사" 
               className="w-11 h-11 logo-glow"
             />
             <h1 className="text-4xl font-black tracking-tight shimmer-text">
-              Playabot
+              Playa 상담사
             </h1>
             <span className="ml-1.5 px-2.5 py-0.5 text-[10px] beta-badge rounded-full">
               R&D Beta
@@ -183,7 +183,7 @@ export default function IdolSelector({ idols }: Props) {
           style={{ animationDelay: '0.4s', opacity: 0 }}
         >
           <span className="bg-gradient-to-r from-violet-500 to-pink-500 bg-clip-text text-transparent font-semibold">
-            Playabot
+            Playa 상담사
           </span>
           <span className="text-gray-400">•</span>
           <span>Made with 💜</span>
