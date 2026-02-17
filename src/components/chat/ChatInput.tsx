@@ -84,11 +84,8 @@ export default function ChatInput({ onSend, disabled, themeColor, language }: Pr
     if (inputRef.current) inputRef.current.style.height = 'auto';
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault();
-      handleSubmit(e);
-    }
+  const handleKeyDown = (_e: React.KeyboardEvent) => {
+    // Enter = 줄바꿈 (발송은 버튼으로만)
   };
 
   useEffect(() => {
