@@ -94,7 +94,7 @@ function TypingBubble({
 
   return (
     <div
-      className="w-fit max-w-full px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed shadow-sm text-gray-800 animate-bubble-in"
+      className="w-fit max-w-full px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed shadow-sm animate-bubble-in"
       style={{
         backgroundColor: `${color}08`,
         border: `1px solid ${color}18`,
@@ -235,16 +235,13 @@ export default function MessageBubble({ message, idol, isNew = false, onBubbleRe
           )}
         </div>
         <div className="max-w-[78%]">
-          <div className="text-[11px] text-gray-400 mb-0.5 ml-1 font-medium">{idol.nameKo}</div>
+          <div className="text-[11px] text-[#636366] mb-0.5 ml-1 font-medium">{idol.nameKo}</div>
           <div className="flex flex-col gap-1.5 items-start">
             {displayParts.map((part, idx) => (
               <div
                 key={idx}
-                className="w-fit max-w-full px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed shadow-sm text-gray-800"
-                style={{
-                  backgroundColor: `${idol.themeColor}08`,
-                  border: `1px solid ${idol.themeColor}18`,
-                }}
+                className="w-fit max-w-full px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed"
+                style={{ backgroundColor: '#2c2c2e', color: '#f2f2f7' }}
               >
                 {parseInstagramHandles(part)}
               </div>
@@ -272,12 +269,12 @@ export default function MessageBubble({ message, idol, isNew = false, onBubbleRe
           )}
         </div>
         <div className="max-w-[78%]">
-          <div className="text-[11px] text-gray-400 mb-0.5 ml-1 font-medium">{idol.nameKo}</div>
+          <div className="text-[11px] text-[#636366] mb-0.5 ml-1 font-medium">{idol.nameKo}</div>
           <div
             className="w-fit px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm"
             style={{
-              backgroundColor: `${idol.themeColor}08`,
-              border: `1px solid ${idol.themeColor}18`,
+              backgroundColor: '#2c2c2e',
+              color: '#f2f2f7',
             }}
           >
             <TypingDots color={idol.themeColor} />
@@ -306,16 +303,16 @@ export default function MessageBubble({ message, idol, isNew = false, onBubbleRe
         )}
       </div>
       <div className="max-w-[78%]">
-        <div className="text-[11px] text-gray-400 mb-0.5 ml-1 font-medium">{idol.nameKo}</div>
+        <div className="text-[11px] text-[#636366] mb-0.5 ml-1 font-medium">{idol.nameKo}</div>
         <div className="flex flex-col gap-1.5 items-start">
           {/* 완료된 버블들 */}
           {completedBubbles.map((part, idx) => (
             <div
               key={`completed-${idx}`}
-              className="w-fit max-w-full px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed shadow-sm text-gray-800"
+              className="w-fit max-w-full px-4 py-2.5 rounded-2xl rounded-tl-sm text-[15px] leading-relaxed shadow-sm"
               style={{
-                backgroundColor: `${idol.themeColor}08`,
-                border: `1px solid ${idol.themeColor}18`,
+                backgroundColor: '#2c2c2e',
+                color: '#f2f2f7',
               }}
             >
               {parseInstagramHandles(part)}
@@ -338,8 +335,8 @@ export default function MessageBubble({ message, idol, isNew = false, onBubbleRe
             <div
               className="w-fit px-4 py-2.5 rounded-2xl rounded-tl-sm shadow-sm animate-bubble-in"
               style={{
-                backgroundColor: `${idol.themeColor}08`,
-                border: `1px solid ${idol.themeColor}18`,
+                backgroundColor: '#2c2c2e',
+                color: '#f2f2f7',
               }}
             >
               <TypingDots color={idol.themeColor} />

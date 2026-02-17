@@ -94,19 +94,19 @@ export default function MessageList({ messages, idol, isStreaming }: Props) {
             )}
           </div>
           <h2
-            className="text-lg font-bold text-gray-700 animate-fade-in-up"
+            className="text-lg font-bold text-white animate-fade-in-up"
             style={{ animationDelay: '0.1s', opacity: 0 }}
           >
             {idol.nameKo}
           </h2>
           <p
-            className="text-sm text-gray-400 mt-1 animate-fade-in-up"
+            className="text-sm text-[#636366] mt-1 animate-fade-in-up"
             style={{ animationDelay: '0.2s', opacity: 0 }}
           >
             {idol.tagline}
           </p>
           <p
-            className="text-xs text-gray-300 mt-5 animate-fade-in-up"
+            className="text-xs text-[#48484a] mt-5 animate-fade-in-up"
             style={{ animationDelay: '0.35s', opacity: 0 }}
           >
             Send a message to start chatting!

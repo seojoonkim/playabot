@@ -106,7 +106,7 @@ export default function ChatLayout({ idol }: Props) {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-white shadow-xl overflow-hidden overflow-x-hidden">
+    <div className="flex flex-col h-screen shadow-xl overflow-hidden overflow-x-hidden" style={{ backgroundColor: '#111111' }}>
       <ChatHeader idol={idol} />
 
       {!historyLoaded ? (
