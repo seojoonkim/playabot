@@ -1,10 +1,8 @@
 import { useChatStore } from '@/stores/chat-store';
 import { useIdolStore } from '@/stores/idol-store';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import ChatLayout from '@/components/chat/ChatLayout';
 import type { IdolMeta } from '@/types/idol';
-
-type TransitionPhase = 'idle' | 'enter';
 
 const PLAYA_IDOL_ID = 'playa';
 
@@ -33,9 +31,6 @@ export default function ChatPage() {
   const loadIdols = useIdolStore((s) => s.loadIdols);
   const idols = useIdolStore((s) => s.idols);
   const loading = useIdolStore((s) => s.loading);
-
-  const [phase, setPhase] = useState<TransitionPhase>('idle');
-  const [displayedIdolId, setDisplayedIdolId] = useState<string | null>(null);
   const initialSynced = useRef(false);
 
   // 아이돌 목록 로드
@@ -43,7 +38,7 @@ export default function ChatPage() {
     loadIdols();
   }, [loadIdols]);
 
-  // playa 아이돌 자동 선택 (선택 화면 없이 바로 채팅)
+  // playa 아이돌 자동 선택
   useEffect(() => {
     if (loading || idols.length === 0 || initialSynced.current) return;
     initialSynced.current = true;
@@ -54,25 +49,12 @@ export default function ChatPage() {
     }
   }, [loading, idols, currentIdolId, setCurrentIdol]);
 
-  // 트랜지션 처리
-  useEffect(() => {
-    if (currentIdolId && !displayedIdolId) {
-      setPhase('enter');
-      setDisplayedIdolId(currentIdolId);
-      const timer = setTimeout(() => setPhase('idle'), 450);
-      return () => clearTimeout(timer);
-    }
-  }, [currentIdolId, displayedIdolId]);
-
   // 로딩 중에도 fallback으로 즉시 렌더링 (스피너 없음)
-  const activeIdol = idols.find((i) => i.id === (displayedIdolId ?? PLAYA_IDOL_ID)) ?? PLAYA_FALLBACK;
+  const activeIdol = idols.find((i) => i.id === PLAYA_IDOL_ID) ?? PLAYA_FALLBACK;
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center">
-      <div
-        className="w-full h-screen"
-        style={{ maxWidth: '600px' }}
-      >
+      <div className="w-full h-screen" style={{ maxWidth: '600px' }}>
         <ChatLayout idol={activeIdol} />
       </div>
     </div>
