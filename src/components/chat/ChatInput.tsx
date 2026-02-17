@@ -195,10 +195,11 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
               onKeyDown={handleKeyDown}
               placeholder={getPlaceholder(language)}
               rows={1}
-              className="w-full pl-4 py-2.5 rounded-2xl text-[15px] outline-none resize-none leading-relaxed scrollbar-hide"
+              className="w-full pl-4 py-[10px] rounded-full text-[15px] outline-none resize-none scrollbar-hide"
               style={{
                 minHeight: '44px',
                 maxHeight: '200px',
+                lineHeight: '24px',
                 paddingRight: text.length > 0 ? '2.5rem' : '3rem',
                 backgroundColor: '#1c1c1e',
                 color: '#ffffff',
@@ -263,7 +264,13 @@ export default function ChatInput({ onSend, disabled, themeColor: _themeColor, l
 
       {/* 전체화면 확대 입력 모달 — Portal로 body에 직접 렌더링 */}
       {isExpanded && createPortal(
-        <div className="fixed inset-0 z-[9999] flex flex-col" style={{ backgroundColor: '#111111' }}>
+        <div
+          className="fixed inset-0 z-[9999] flex flex-col"
+          style={{
+            backgroundColor: '#111111',
+            animation: 'slideUp 0.25s cubic-bezier(0.32,0.72,0,1)',
+          }}
+        >
           {/* 상단 바 */}
           <div className="flex items-center justify-end px-4 py-3">
             <button
