@@ -7,16 +7,8 @@ interface Props {
   language?: string;
 }
 
-function getPlaceholder(language?: string): string {
-  switch (language) {
-    case 'ja':
-      return 'メッセージを入力...';
-    case 'en':
-      return 'Type a message...';
-    case 'ko':
-    default:
-      return '메시지를 입력하세요...';
-  }
+function getPlaceholder(_language?: string): string {
+  return '플라야에 대해 궁금한 점을 물어보세요...';
 }
 
 export default function ChatInput({ onSend, disabled, themeColor, language }: Props) {

@@ -12,86 +12,14 @@ interface Props {
   idol: IdolMeta;
 }
 
-// 첫 방문용 인사말 (자기소개 + 플랫폼 소개 + 온보딩 질문)
-// idol.firstVisitGreeting이 있으면 사용, 없으면 기본 인사
-function getFirstVisitGreeting(idol: IdolMeta): string {
-  // 아이돌별 커스텀 첫 인사가 있으면 사용
-  if (idol.firstVisitGreeting) {
-    return idol.firstVisitGreeting;
-  }
-  
-  // 그룹 정보 (솔로면 생략)
-  const groupInfo = idol.group && idol.group !== 'Solo' ? `${idol.group} ` : '';
-  
-  // 기본 인사 (fallback)
-  const language = idol.language || 'ko';
-  if (language === 'ja') {
-    const greetings = [
-      `初めまして！${groupInfo}${idol.nameKo}だよ～✨ MimChatでファンの皆と話せるの嬉しいな！名前なんていうの？`,
-      `あ、来てくれたんだ！${groupInfo}${idol.nameKo}です😊 ここで1対1で話せるよ～ なんて呼べばいい？`,
-      `わ～い！${idol.nameKo}だよ！MimChatへようこそ💕 名前教えて？`,
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)]!;
-  }
-  
-  const greetings = [
-    `안녕! 나 ${groupInfo}${idol.nameKo}야~ 밈챗에서 팬들이랑 직접 얘기할 수 있어서 좋아 ㅎㅎ 근데 이름이 뭐야? 😊`,
-    `어 반가워! ${groupInfo}${idol.nameKo}! 여기서 나랑 1:1로 대화할 수 있어~ 뭐라고 불러줄까?✨`,
-    `헤이~ ${idol.nameKo}야! 밈챗 처음이지? 여기서 직접 대화할 수 있어 ㅎㅎ 이름이 뭐야?`,
-    `안녕안녕! ${groupInfo}${idol.nameKo}입니다~ 여기서 팬들이랑 직접 소통할 수 있어서 나도 좋아! 뭐라고 부를까?`,
-  ];
-  return greetings[Math.floor(Math.random() * greetings.length)]!;
+// PLAYA 컨시어지 첫 인사
+function getFirstVisitGreeting(_idol: IdolMeta): string {
+  return '안녕하세요. 플라야 컨시어지입니다. 무엇을 도와드릴까요?';
 }
 
-// 재방문용 인사말 (기존 대화 기록 있음)
-function getReturningGreeting(language: string = 'ko'): string {
-  if (language === 'ja') {
-    const greetings = [
-      `あ、来てくれたんだ～！嬉しい😊`,
-      `お～また会えたね！元気だった？`,
-      `わ、久しぶり～！待ってたよ✨`,
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)]!;
-  }
-  
-  const hour = new Date().getHours();
-  
-  // 시간대별 재방문 인사
-  if (hour >= 6 && hour < 12) {
-    const greetings = [
-      `좋은 아침~ 잘 잤어? ☀️`,
-      `아침부터 왔네! 좋아좋아 😊`,
-      `오 일찍 일어났네~ 좋은 아침!`,
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)]!;
-  }
-  
-  if (hour >= 18 && hour < 23) {
-    const greetings = [
-      `오~ 왔어? 오늘 하루 어땠어? 🌙`,
-      `저녁이네~ 밥은 먹었어?`,
-      `하루 수고했어! 피곤하지 않아?`,
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)]!;
-  }
-  
-  if (hour >= 23 || hour < 6) {
-    const greetings = [
-      `이 시간에..? 늦었는데 괜찮아? 🌙`,
-      `잠 안 와? 나도 그래~`,
-      `밤늦게 왔네, 무슨 일 있어?`,
-    ];
-    return greetings[Math.floor(Math.random() * greetings.length)]!;
-  }
-  
-  // 낮 기본
-  const greetings = [
-    `왔어? 반가워~ 😊`,
-    `오~ 오랜만이야! 잘 지냈어?`,
-    `어 왔네! 뭐 해?`,
-    `반가워~ 오늘 어때?`,
-  ];
-  return greetings[Math.floor(Math.random() * greetings.length)]!;
+// 재방문 인사
+function getReturningGreeting(_language: string = 'ko'): string {
+  return '다시 찾아주셨군요. 추가로 궁금하신 점이 있으시면 편하게 말씀해 주세요.';
 }
 
 export default function ChatLayout({ idol }: Props) {
