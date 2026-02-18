@@ -9,6 +9,8 @@ import ChatInput, { type Attachment } from './ChatInput';
 
 interface Props {
   idol: IdolMeta;
+  systemPromptOverride?: string;
+  initialGreeting?: string;
 }
 
 // 시간대별 인사 prefix
@@ -36,8 +38,9 @@ function getReturningGreeting(_language: string = 'ko'): string {
   return timeGreeting + '다시 찾아주셨군요. 추가로 궁금하신 점이 있으시면 편하게 말씀해 주세요.';
 }
 
-export default function ChatLayout({ idol }: Props) {
-  const { systemPrompt, knowledge } = useSystemPrompt(idol);
+export default function ChatLayout({ idol, systemPromptOverride, initialGreeting }: Props) {
+  const { systemPrompt: builtPrompt, knowledge } = useSystemPrompt(idol);
+  const systemPrompt = systemPromptOverride || builtPrompt;
   const { messages, isStreaming, error, sendMessage, addAssistantMessage, historyLoaded } =
     useChat(systemPrompt, knowledge);
 
@@ -55,9 +58,11 @@ export default function ChatLayout({ idol }: Props) {
       const visitKey = `mim_visited_${idol.id}`;
       const hasVisitedBefore = localStorage.getItem(visitKey) === 'true';
       
-      // 인사말 결정
+      // 인사말 결정 (initialGreeting override > 재방문 > 첫방문)
       let greeting: string;
-      if (hasVisitedBefore) {
+      if (initialGreeting) {
+        greeting = initialGreeting;
+      } else if (hasVisitedBefore) {
         // 재방문 - 시간대별 인사
         greeting = getReturningGreeting(idol.language || 'ko');
         console.log('[ChatLayout] Returning user greeting:', greeting);

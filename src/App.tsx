@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router';
 import { lazy, Suspense } from 'react';
 import ChatPage from './pages/ChatPage';
 import LandingPage from './pages/LandingPage';
+import EmbedPage from './pages/EmbedPage';
 
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 
@@ -10,6 +11,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/chat" element={<ChatPage />} />
+      <Route path="/embed" element={<EmbedPage />} />
       <Route path="/chat/:idolId" element={<ChatPage />} />
       <Route
         path="/admin/*"
